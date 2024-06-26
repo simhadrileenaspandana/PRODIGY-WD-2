@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .stopwatch {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .display {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .controls button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        #startStopBtn {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        #resetBtn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        #lapBtn {
+            background-color: #008cba;
+            color: white;
+        }
+        
+        .laps {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        
+        .laps li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="stopwatch">
+        <div class="display">00:00:00</div>
+        <div class="controls">
+            <button id="startStopBtn">Start</button>
+            <button id="resetBtn">Reset</button>
+            <button id="lapBtn">Lap</button>
+        </div>
+        <ul class="laps"></ul>
+    </div>
+    <script src="script.js"></script>
+    <script> let startTime, elapsedTime = 0, timerInterval;
+        let isRunning = false;
+        const display = document.querySelector('.display');
+        const startStopBtn = document.getElementById('startStopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const laps = document.querySelector('.laps');
+        
+        startStopBtn.addEventListener('click', startStop);
+        resetBtn.addEventListener('click', reset);
+        lapBtn.addEventListener('click', recordLap);
+        
+        function startStop() {
+            if (isRunning) {
+                stop();
+            } else {
+                start();
+            }
+        }
+        
+        function start() {
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(updateTime, 100);
+            startStopBtn.textContent = 'Stop';
+            isRunning = true;
+        }
+        
+        function stop() {
+            clearInterval(timerInterval);
+            elapsedTime = Date.now() - startTime;
+            startStopBtn.textContent = 'Start';
+            isRunning = false;
+        }
+        
+        function reset() {
+            clearInterval(timerInterval);
+            elapsedTime = 0;
+            updateTime();
+            startStopBtn.textContent = 'Start';
+            laps.innerHTML = '';
+            isRunning = false;
+        }
+        
+        function updateTime() {
+            elapsedTime = Date.now() - startTime;
+            display.textContent = timeToString(elapsedTime);
+        }
+        
+        function timeToString(time) {
+            let diffInHrs = time / 3600000;
+            let hh = Math.floor(diffInHrs);
+        
+            let diffInMin = (diffInHrs - hh) * 60;
+            let mm = Math.floor(diffInMin);
+        
+            let diffInSec = (diffInMin - mm) * 60;
+            let ss = Math.floor(diffInSec);
+        
+            let diffInMs = (diffInSec - ss) * 100;
+            let ms = Math.floor(diffInMs);
+        
+            let formattedHH = hh.toString().padStart(2, '0');
+            let formattedMM = mm.toString().padStart(2, '0');
+            let formattedSS = ss.toString().padStart(2, '0');
+            let formattedMS = ms.toString().padStart(2, '0');
+        
+            return `${formattedHH}:${formattedMM}:${formattedSS}`;
+        }
+        
+        function recordLap() {
+            if (isRunning) {
+                const lapTime = timeToString(elapsedTime);
+                const lapElement = document.createElement('li');
+                lapElement.textContent = lapTime;
+                laps.appendChild(lapElement);
+            }
+        }
+        </script>
+</body>
+</html>
